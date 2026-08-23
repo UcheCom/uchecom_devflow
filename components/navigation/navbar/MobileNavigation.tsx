@@ -3,13 +3,10 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Link } from "lucide-react"
+import Link from "next/link"
 import ROUTES from "@/constants/routes"
 import { Button } from "@/components/ui/button"
 import NavLinks from "./NavLinks"

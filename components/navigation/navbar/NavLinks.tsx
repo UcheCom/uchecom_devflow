@@ -15,18 +15,18 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
   return (
     <>
       {sidebarLinks.map((item) => {
+        const route =
+          item.route === "/profile" && userId
+            ? `${item.route}/${userId}`
+            : item.route;
         const isActive =
-          (pathname.includes(item.route) && item.route.length > 1) ||
-          pathname === item.route;
+          (pathname.includes(route) && route.length > 1) || pathname === route;
 
-        if (item.route === "/profile") {
-          if (userId) item.route = `${item.route}/${userId}`;
-          else return null;
-        }
+        if (item.route === "/profile" && !userId) return null;
 
         const LinkComponent = (
           <Link
-            href={item.route}
+            href={route}
             key={item.label}
             className={cn(
               isActive
@@ -40,7 +40,7 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
               alt={item.label}
               width={20}
               height={20}
-              className={cn({ "invert-colors": !isActive })}
+              className={cn("h-auto", { "invert-colors": !isActive })}
             />
             <p
               className={cn(
@@ -54,11 +54,11 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
         );
 
         return isMobileNav ? (
-          <SheetClose asChild key={item.route}>
+          <SheetClose asChild key={route}>
             {LinkComponent}
           </SheetClose>
         ) : (
-          <React.Fragment key={item.route}>{LinkComponent}</React.Fragment>
+          <React.Fragment key={route}>{LinkComponent}</React.Fragment>
         );
       })}
     </>
