@@ -1,11 +1,12 @@
+import Link from "next/link";
+
 import QuestionCard from "@/components/cards/QuestionCard";
 import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
 import handleError from "@/lib/handlers/error";
-import { NotFoundError } from "@/lib/http-errors";
-import Link from "next/link";
+import { ValidationError } from "@/lib/http-errors";
 
 const questions = [
   {
@@ -50,20 +51,21 @@ const questions = [
 
 const test = async () => {
   try {
-    throw new NotFoundError("Test Error")
+    throw new ValidationError({
+      title: ["Required"],
+      tags: ['"JavaScript" is not a valid tag.'],
+    });
   } catch (error) {
     return handleError(error);
   }
-}
+};
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-
-  const result = await test();
-  console.log(result);
+  await test();
 
   const { query = "", filter = "" } = await searchParams;
 
@@ -72,12 +74,13 @@ const Home = async ({ searchParams }: SearchParams) => {
     const matchesFilter = filter ? question.tags[0].name.toLowerCase() === filter.toLowerCase() : true;
     return matchesQuery && matchesFilter;
   });
+
   return (
     <>
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="h1-bold text-dark100_light900">All Questions</h1>
 
-        <Button className="primary-gradient text-light-900! min-h-11.5 px-4 py-3" asChild>
+        <Button className="primary-gradient !text-light-900 min-h-[46px] px-4 py-3" asChild>
           <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
