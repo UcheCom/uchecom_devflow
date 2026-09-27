@@ -5,9 +5,7 @@ import HomeFilter from "@/components/filters/HomeFilter";
 import LocalSearch from "@/components/search/LocalSearch";
 import { Button } from "@/components/ui/button";
 import ROUTES from "@/constants/routes";
-import handleError from "@/lib/handlers/error";
-import { ValidationError } from "@/lib/http-errors";
-import { api } from "@/lib/api";
+import { auth } from "@/auth";
 
 const questions = [
   {
@@ -50,22 +48,14 @@ const questions = [
   },
 ];
 
-const test = async () => {
-  try {
-    return await api.users.getAll();
-  } catch (error) {
-    return handleError(error);
-  }
-};
-
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
 }
 
 const Home = async ({ searchParams }: SearchParams) => {
-  const users = await test();
+  const session = await auth();
 
-  console.log(users)
+  console.log("Session: ", session);
 
   const { query = "", filter = "" } = await searchParams;
 
@@ -80,7 +70,7 @@ const Home = async ({ searchParams }: SearchParams) => {
       <section className="flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center">
         <h1 className="h1-bold text-dark100_light900">All Questions</h1>
 
-        <Button className="primary-gradient !text-light-900 min-h-[46px] px-4 py-3" asChild>
+        <Button className="primary-gradient text-light-900! min-h-11.5 px-4 py-3" asChild>
           <Link href={ROUTES.ASK_QUESTION}>Ask a Question</Link>
         </Button>
       </section>
