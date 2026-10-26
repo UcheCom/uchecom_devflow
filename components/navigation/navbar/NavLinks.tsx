@@ -1,37 +1,31 @@
-'use client'
+"use client";
 
-import { SheetClose } from "@/components/ui/sheet";
-import { sidebarLinks } from "@/constants";
-import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
+import { SheetClose } from "@/components/ui/sheet";
+import { sidebarLinks } from "@/constants";
+import { cn } from "@/lib/utils";
+
+const NavLinks = ({ isMobileNav = false, userId }: { isMobileNav?: boolean; userId?: string }) => {
   const pathname = usePathname();
-  const userId = 1;
 
   return (
     <>
       {sidebarLinks.map((item) => {
-        const route =
-          item.route === "/profile" && userId
-            ? `${item.route}/${userId}`
-            : item.route;
-        const isActive =
-          (pathname.includes(route) && route.length > 1) || pathname === route;
+        const route = item.route === "/profile" ? (userId ? `${item.route}/${userId}` : null) : item.route;
+        if (!route) return null;
 
-        if (item.route === "/profile" && !userId) return null;
+        const isActive = (pathname.includes(route) && route.length > 1) || pathname === route;
 
         const LinkComponent = (
           <Link
             href={route}
             key={item.label}
             className={cn(
-              isActive
-                ? "primary-gradient rounded-lg text-light-900"
-                : "text-dark300_light900",
+              isActive ? "primary-gradient text-light-900 rounded-lg" : "text-dark300_light900",
               "flex items-center justify-start gap-4 bg-transparent p-4"
             )}
           >
@@ -40,16 +34,9 @@ const NavLinks = ({ isMobileNav = false }: { isMobileNav?: boolean }) => {
               alt={item.label}
               width={20}
               height={20}
-              className={cn("h-auto", { "invert-colors": !isActive })}
+              className={cn({ "invert-colors": !isActive })}
             />
-            <p
-              className={cn(
-                isActive ? "base-bold" : "base-medium",
-                !isMobileNav && "max-lg:hidden"
-              )}
-            >
-              {item.label}
-            </p>
+            <p className={cn(isActive ? "base-bold" : "base-medium", !isMobileNav && "max-lg:hidden")}>{item.label}</p>
           </Link>
         );
 

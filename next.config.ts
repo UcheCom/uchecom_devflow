@@ -11,6 +11,16 @@ const nextConfig: NextConfig = {
         pathname: "/system/resources/previews/**",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        port: "",
+      }
     ],
   },
 };

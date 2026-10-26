@@ -47,10 +47,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async session({ session, token }) {
-      session.user.id = token.sub as string;
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
       return session;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, user, account }) {
+      if (user && typeof user.id === "string") {
+        token.sub = user.id;
+      }
+
       if (account) {
         const { data: existingAccount, success } = (await api.accounts.getByProvider(
           account.type === "credentials" ? token.email! : account.providerAccountId
