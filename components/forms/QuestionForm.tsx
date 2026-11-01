@@ -93,7 +93,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
             description: "Question updated successfully",
           });
 
-          if (result.data) router.push(ROUTES.QUESTION(result.data._id));
+          if (result.data) router.push(ROUTES.QUESTION(String(result.data._id)));
         } else {
           toast.error(`Error ${result.status}`, {
             description: result.error?.message || "Something went wrong",
@@ -109,7 +109,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
           description: "Question created successfully",
         });
 
-        if (result.data) router.push(ROUTES.QUESTION(result.data._id));
+        if (result.data) router.push(ROUTES.QUESTION(String(result.data._id)));
       } else {
         toast.error(`Error ${result.status}`, {
           description: result.error?.message || "Something went wrong",
