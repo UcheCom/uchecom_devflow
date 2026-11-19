@@ -1,30 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
-
 import { Input } from "../ui/input";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef } from "react";
+import { formUrlQuery, removeKeysFromUrlQuery } from "@/lib/url";
 
 interface Props {
   route: string;
   imgSrc: string;
   placeholder: string;
   otherClasses?: string;
+  iconPosition?: "left" | "right";
 }
 
-const LocalSearch = ({ route, imgSrc, placeholder, otherClasses }: Props) => {
+const LocalSearch = ({ route, imgSrc, placeholder, otherClasses, iconPosition = "left" }: Props) => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get("query") || "";
 
   const [searchQuery, setSearchQuery] = useState(query);
+  const previousSearchRef = useRef(searchQuery);
 
   useEffect(() => {
-    if (pathname !== route || searchQuery === query) return;
+    // Only trigger if search actually changed
+    if (previousSearchRef.current === searchQuery) return;
+
+    previousSearchRef.current = searchQuery;
 
     const delayDebounceFn = setTimeout(() => {
       if (searchQuery) {
@@ -34,31 +37,27 @@ const LocalSearch = ({ route, imgSrc, placeholder, otherClasses }: Props) => {
           value: searchQuery,
         });
 
-        router.replace(newUrl, { scroll: false });
+        router.push(newUrl, { scroll: false });
       } else {
-        const newUrl = removeKeysFromUrlQuery({
-          params: searchParams.toString(),
-          keysToRemove: ["query"],
-        });
+        if (pathname === route) {
+          const newUrl = removeKeysFromUrlQuery({
+            params: searchParams.toString(),
+            keysToRemove: ["query"],
+          });
 
-        router.replace(newUrl, { scroll: false });
+          router.push(newUrl, { scroll: false });
+        }
       }
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [pathname, query, route, router, searchParams, searchQuery]);
+  }, [searchQuery, route, pathname, router, searchParams]);
 
   return (
     <div
-      className={`background-light800_darkgradient flex min-h-[56px] grow items-center gap-4 rounded-[10px] px-4 ${otherClasses}`}
+      className={`background-light800_darkgradient flex min-h-14 grow items-center gap-4 rounded-[10px] px-4 ${otherClasses}`}
     >
-      <Image
-        src={imgSrc}
-        width={24}
-        height={24}
-        alt="Search"
-        className="cursor-pointer"
-      />
+      {iconPosition === "left" && <Image src={imgSrc} width={24} height={24} alt="Search" className="cursor-pointer" />}
 
       <Input
         type="text"
@@ -67,6 +66,10 @@ const LocalSearch = ({ route, imgSrc, placeholder, otherClasses }: Props) => {
         onChange={(e) => setSearchQuery(e.target.value)}
         className="paragraph-regular no-focus placeholder text-dark400_light700 border-none shadow-none outline-none"
       />
+
+      {iconPosition === "right" && (
+        <Image src={imgSrc} width={15} height={15} alt="Search" className="cursor-pointer" />
+      )}
     </div>
   );
 };
